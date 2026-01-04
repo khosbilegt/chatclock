@@ -2,6 +2,11 @@
 
 Chrome Extension to show a chat partner's time zone for for all the folk chatting with people in other timezones. Currently all data is stored locally in Chrome.
 
+## Supported Websites
+
+- https://instagram.com
+- https://discord.com
+
 ## Roadmap:
 
 - add a bunch of different platforms
