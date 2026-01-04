@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ChatZone",
+  "name": "ChatClock",
   "version": "0.1.0",
   "description": "Show your chat partner's local time. Currently supports Instagram and Discord.",
   "icons": {
