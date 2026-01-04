@@ -10,7 +10,7 @@ Chrome Extension to show a chat partner's time zone for for all the folk chattin
 ## Roadmap:
 
 - add a bunch of different platforms
-- add account support and a paid tier (really cheap, think $0.99) for syncing it
+- add account support and a paid tier (really cheap, think $0.99) for syncing it across devices
 - add a version for non-chromium browsers
 
 ## Examples
