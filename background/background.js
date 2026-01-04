@@ -16,4 +16,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true;
   }
+
+  if (request.type === "GET_POSITION") {
+    chrome.storage.local.get(["badge_position"], (result) => {
+      sendResponse({ position: result.badge_position || "bottom-right" });
+    });
+    return true;
+  }
+
+  if (request.type === "SET_POSITION") {
+    chrome.storage.local.set({ badge_position: request.position }, () => {
+      sendResponse({ success: true });
+    });
+    return true;
+  }
 });

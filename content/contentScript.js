@@ -5,6 +5,7 @@ let badgeEl = null;
 let popoverEl = null;
 let timeUpdateInterval = null;
 let currentAdapter = null;
+let badgePosition = "bottom-right";
 
 /* -----------------------------
    Website adapter
@@ -32,6 +33,75 @@ function getThreadId() {
    UI helpers
 ------------------------------ */
 
+function applyBadgePosition() {
+  if (!badgeEl) return;
+
+  // Reset all position properties
+  badgeEl.style.top = "";
+  badgeEl.style.bottom = "";
+  badgeEl.style.left = "";
+  badgeEl.style.right = "";
+
+  switch (badgePosition) {
+    case "top-right":
+      badgeEl.style.top = "20px";
+      badgeEl.style.right = "20px";
+      break;
+    case "top-left":
+      badgeEl.style.top = "20px";
+      badgeEl.style.left = "20px";
+      break;
+    case "bottom-left":
+      badgeEl.style.bottom = "20px";
+      badgeEl.style.left = "20px";
+      break;
+    case "bottom-right":
+    default:
+      badgeEl.style.bottom = "20px";
+      badgeEl.style.right = "20px";
+      break;
+  }
+}
+
+function applyPopoverPosition() {
+  if (!popoverEl || !badgeEl) return;
+
+  // Reset all position properties
+  popoverEl.style.top = "";
+  popoverEl.style.bottom = "";
+  popoverEl.style.left = "";
+  popoverEl.style.right = "";
+
+  const badgeRect = badgeEl.getBoundingClientRect();
+  const popoverHeight = 300; // Approximate popover height
+  const popoverWidth = 280; // Popover width
+  const spacing = 10; // Space between badge and popover
+
+  switch (badgePosition) {
+    case "top-right":
+      popoverEl.style.top = `${badgeRect.bottom + spacing}px`;
+      popoverEl.style.right = "20px";
+      break;
+    case "top-left":
+      popoverEl.style.top = `${badgeRect.bottom + spacing}px`;
+      popoverEl.style.left = "20px";
+      break;
+    case "bottom-left":
+      popoverEl.style.bottom = `${
+        window.innerHeight - badgeRect.top + spacing
+      }px`;
+      popoverEl.style.left = "20px";
+      break;
+    case "bottom-right":
+    default:
+      popoverEl.style.bottom = `${
+        window.innerHeight - badgeRect.top + spacing
+      }px`;
+      popoverEl.style.right = "20px";
+      break;
+  }
+}
+
 function createBadge() {
   if (badgeEl) return badgeEl;
 
@@ -40,8 +110,6 @@ function createBadge() {
 
   badgeEl.style.cssText = `
     position: fixed;
-    bottom: 20px;
-    right: 20px;
     background: rgba(0, 0, 0, 0.9);
     color: #fff;
     padding: 10px 14px;
@@ -56,6 +124,8 @@ function createBadge() {
     min-width: 120px;
     text-align: center;
   `;
+
+  applyBadgePosition();
 
   badgeEl.addEventListener("mouseenter", () => {
     if (badgeEl) {
@@ -113,8 +183,6 @@ function createPopover() {
   popoverEl.id = "chatclock-popover";
   popoverEl.style.cssText = `
     position: fixed;
-    bottom: 80px;
-    right: 20px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -124,6 +192,8 @@ function createPopover() {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     display: none;
   `;
+
+  applyPopoverPosition();
 
   popoverEl.innerHTML = `
     <div style="margin-bottom: 16px;">
@@ -170,6 +240,57 @@ function createPopover() {
       </div>
       <input type="hidden" id="chatclock-timezone-value" value="" />
     </div>
+    <div style="margin-bottom: 16px;">
+      <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 500; color: #262626;">
+        Badge Position:
+      </label>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button class="chatclock-position-btn" data-position="top-left" style="
+          padding: 8px 12px;
+          border: 1px solid #dbdbdb;
+          border-radius: 8px;
+          background: #fff;
+          color: #262626;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">Top Left</button>
+        <button class="chatclock-position-btn" data-position="top-right" style="
+          padding: 8px 12px;
+          border: 1px solid #dbdbdb;
+          border-radius: 8px;
+          background: #fff;
+          color: #262626;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">Top Right</button>
+        <button class="chatclock-position-btn" data-position="bottom-left" style="
+          padding: 8px 12px;
+          border: 1px solid #dbdbdb;
+          border-radius: 8px;
+          background: #fff;
+          color: #262626;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">Bottom Left</button>
+        <button class="chatclock-position-btn" data-position="bottom-right" style="
+          padding: 8px 12px;
+          border: 1px solid #dbdbdb;
+          border-radius: 8px;
+          background: #fff;
+          color: #262626;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">Bottom Right</button>
+      </div>
+    </div>
     <div style="display: flex; gap: 8px; justify-content: flex-end;">
       <button id="chatclock-cancel-btn" style="
         padding: 8px 16px;
@@ -214,6 +335,17 @@ function createPopover() {
     .addEventListener("click", () => {
       saveTimezone();
     });
+
+  // Position button handlers
+  const positionButtons = document.querySelectorAll(".chatclock-position-btn");
+  positionButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const position = btn.dataset.position;
+      selectPosition(position);
+    });
+  });
+
+  loadPositionForPopover();
 
   // Close popover when clicking outside
   document.addEventListener("click", (e) => {
@@ -440,6 +572,7 @@ function showPopover() {
     // populateTimezoneSelect is already called in createPopover
     // and will load timezone after timezones are loaded
   }
+  applyPopoverPosition();
   popoverEl.style.display = "block";
   // Only load if timezones are already available
   if (allTimezones.length > 0) {
@@ -471,6 +604,50 @@ function loadTimezoneForPopover() {
       }
     }
   );
+}
+
+function loadPositionForPopover() {
+  chrome.runtime.sendMessage({ type: "GET_POSITION" }, (response) => {
+    if (response && response.position) {
+      selectPosition(response.position, false);
+    }
+  });
+}
+
+function selectPosition(position, save = true) {
+  badgePosition = position;
+
+  // Update button styles
+  const positionButtons = document.querySelectorAll(".chatclock-position-btn");
+  positionButtons.forEach((btn) => {
+    if (btn.dataset.position === position) {
+      btn.style.background = "#0095f6";
+      btn.style.color = "#fff";
+      btn.style.borderColor = "#0095f6";
+    } else {
+      btn.style.background = "#fff";
+      btn.style.color = "#262626";
+      btn.style.borderColor = "#dbdbdb";
+    }
+  });
+
+  // Update badge position
+  applyBadgePosition();
+
+  // Update popover position
+  applyPopoverPosition();
+
+  // Save position
+  if (save) {
+    chrome.runtime.sendMessage(
+      { type: "SET_POSITION", position },
+      (response) => {
+        if (response && response.success) {
+          // Position saved successfully
+        }
+      }
+    );
+  }
 }
 
 function saveTimezone() {
@@ -605,7 +782,21 @@ function startUrlObserver() {
    Init
 ------------------------------ */
 
+function loadBadgePosition() {
+  chrome.runtime.sendMessage({ type: "GET_POSITION" }, (response) => {
+    if (response && response.position) {
+      badgePosition = response.position;
+      if (badgeEl) {
+        applyBadgePosition();
+      }
+    }
+  });
+}
+
 (function init() {
+  // Load badge position first
+  loadBadgePosition();
+
   // Wait for DOM to be ready
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
