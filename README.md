@@ -1,6 +1,6 @@
 # Chatclock
 
-Chrome Extension to show a chat partner's time zone for for all the folk chatting with people in other timezones.
+Chrome Extension to show a chat partner's time zone for for all the folk chatting with people in other timezones. Currently all data is stored locally in Chrome.
 
 ## Roadmap:
 
